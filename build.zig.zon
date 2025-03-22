@@ -1,0 +1,21 @@
+.{
+    .name = "idle-inhibitor",
+    .version = "0.0.0",
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        // For example...
+        //"LICENSE",
+        //"README.md",
+    },
+
+    .dependencies = .{
+        .wayland_headers = .{
+            .url = "https://pkg.machengine.org/wayland-headers/7c53e7483c3cfb5c6780ae542c9f5cfa712a826a.tar.gz",
+            .hash = "1220563c3d5603a02e61293c2c0223e01a3f298fb606bf0d108293b925434970a207",
+            .lazy = true,
+        },
+    },
+}
