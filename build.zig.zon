@@ -1,6 +1,7 @@
 .{
-    .name = "idle-inhibitor",
+    .name = .idle_inhibitor,
     .version = "0.0.0",
+    .fingerprint = 0x71f79d66afff7afd,
 
     .paths = .{
         "build.zig",
