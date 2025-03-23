@@ -22,6 +22,7 @@
             };
           };
           config = lib.mkIf cfg.enable {
+            enable = true;
             systemd.user.services.idle-inhibitor = {
               description = "Idle Inhibitor Service";
 
