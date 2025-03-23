@@ -4,10 +4,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    zon2nix.url = "github:nix-community/zon2nix";
   };
 
-  outputs = { self, nixpkgs, flake-utils, zon2nix }:
+  outputs = { self, nixpkgs, flake-utils }:
     let
       nixosModule = { config, lib, pkgs, ... }:
         let
@@ -33,20 +32,15 @@
               default = "idle-inhibitor";
               description = "Group under which the service runs";
             };
-
-            # Add any other configuration options your service needs
-            port = lib.mkOption {
-              type = lib.types.port;
-              default = 8080;
-              description = "Port to listen on";
-            };
           };
 
           config = lib.mkIf cfg.enable {
             systemd.services.idle-inhibitor = {
               description = "Idle Inhibitor Service";
-              wantedBy = [ "multi-user.target" ];
-              after = [ "network.target" ];
+
+              after = [ "graphical-session.target" ];
+              wants = [ "graphical-session.target" ];
+              wantedBy = [ "graphical-session.target" ];
 
               serviceConfig = {
                 Type = "simple";
@@ -55,6 +49,10 @@
                 ExecStart = "${cfg.package}/bin/idle-inhibitor";
                 Restart = "on-failure";
                 RestartSec = "5s";
+
+                Environment = [
+                  "XDG_RUNTIME_DIR=/run/user/\${UID}"
+                ];
 
                 # Hardening options
                 PrivateTmp = true;
@@ -86,7 +84,6 @@
             buildInputs = with pkgs; [
               wayland
               zig
-              zon2nix.packages.${system}.default
             ];
 
             LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
@@ -106,14 +103,14 @@
               zig
             ];
 
-            zigBuildFlags = [
-              "--system"
-              "${finalAttrs.deps}"
-            ];
-
             buildInputs = with pkgs; [
               wayland
               zig.hook
+            ];
+
+            zigBuildFlags = [
+              "--system"
+              "${finalAttrs.deps}"
             ];
           });
 
