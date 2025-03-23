@@ -12,6 +12,9 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     var ssh_mon = ssh.Monitor.init(allocator, &idler);
     try ssh_mon.start();
+    ssh_mon.stop();
+
+    idler.enable();
 
     while (true) {}
 }

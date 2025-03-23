@@ -44,10 +44,10 @@ pub const Monitor = struct {
         // it could be an SSH or Telnet session
         const i = std.mem.indexOf(u8, result.stdout, "pts");
         if (i == null) {
-            std.log.debug("monitor: no remote session, disabling inhibitor", .{});
+            std.log.info("monitor: no remote session, disabling inhibitor", .{});
             self.idler.disable();
         } else {
-            std.log.debug("monitor: found remote session, enabling inhibitor", .{});
+            std.log.info("monitor: found remote session, enabling inhibitor", .{});
             self.idler.enable();
         }
     }

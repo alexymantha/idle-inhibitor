@@ -4,9 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    zon2nix.url = "github:nix-community/zon2nix";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, zon2nix }:
     let
       nixosModule = { config, lib, pkgs, ... }:
         let
@@ -85,6 +86,7 @@
             buildInputs = with pkgs; [
               wayland
               zig
+              zon2nix.packages.${system}.default
             ];
 
             LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
@@ -92,29 +94,28 @@
             ];
           };
 
-          packages.idle-inhibitor = pkgs.stdenv.mkDerivation {
+          packages.idle-inhibitor = pkgs.stdenv.mkDerivation (finalAttrs: {
             pname = "idle-inhibitor";
             version = "0.0.1";
 
             src = ./.; # Assumes source code is in the same directory as flake.nix
 
+            deps = pkgs.callPackage ./build.zig.zon.nix {};
+
             nativeBuildInputs = with pkgs; [
               zig
             ];
 
-            buildInputs = with pkgs; [
-              wayland
+            zigBuildFlags = [
+              "--system"
+              "${finalAttrs.deps}"
             ];
 
-            buildPhase = ''
-            zig build -Doptimize=ReleaseSafe
-            '';
-
-            installPhase = ''
-            mkdir -p $out/bin
-            cp zig-out/bin/idle-inhibitor $out/bin/
-            '';
-          };
+            buildInputs = with pkgs; [
+              wayland
+              zig.hook
+            ];
+          });
 
           packages.default = self.packages.${system}.idle-inhibitor;
         }
