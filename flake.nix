@@ -22,11 +22,9 @@
             };
           };
           config = lib.mkIf cfg.enable {
-            # Install the systemd user service for all users
-            systemd.user.services.wayland-app = {
+            systemd.user.services.idle-inhibitor = {
               description = "Idle Inhibitor Service";
 
-              # Start after the Wayland compositor is ready
               after = [ "graphical-session.target" ];
               partOf = [ "graphical-session.target" ];
               wantedBy = [ "graphical-session.target" ];
@@ -40,9 +38,6 @@
                 # The XDG_RUNTIME_DIR is automatically set for user services
               };
             };
-
-            # Enable the systemd user instance for the specified user
-            systemd.user.startServices = true;
           };
         };
     in 
