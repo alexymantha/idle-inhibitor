@@ -22,7 +22,6 @@
             };
           };
           config = lib.mkIf cfg.enable {
-            enable = true;
             systemd.user.services.idle-inhibitor = {
               description = "Idle Inhibitor Service";
 
@@ -34,9 +33,6 @@
                 ExecStart = "${cfg.package}/bin/idle-inhibitor";
                 Restart = "on-failure";
                 RestartSec = 1;
-
-                # Environment setup is handled by PAM and the systemd user session
-                # The XDG_RUNTIME_DIR is automatically set for user services
               };
             };
           };
